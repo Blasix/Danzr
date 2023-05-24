@@ -7,7 +7,7 @@ import runnables.play as play;
 
 bot = commands.Bot(command_prefix='/', intents=discord.Intents.all())
 
-#import play command
+#Import play command
 @bot.tree.command(name='play', description='play a song')
 @app_commands.describe(song_url='The song to play')
 async def say(interaction: discord.Interaction, song_url: str):
