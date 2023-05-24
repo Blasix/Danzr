@@ -3,23 +3,10 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+import asyncio
+import yt_dlp
 
-
-# class MyClient(discord.Client):
-#     async def on_ready(self):
-#         print(f'Logged on as {self.user}!')
-
-#     async def on_message(self, message):
-#         print(f'Message from {message.author}: {message.content}')
-
-
-# intents = discord.Intents.default()
-# intents.message_content = True
-
-# client = MyClient(intents=intents)
-# client.run('ODgxMDg5OTI2NzY5MjgzMDky.Gx9LC0.k2dS2eAhPe4mSoCGlAaM-KYsbbgz7MlzKarzcs')
-
-bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
+bot = commands.Bot(command_prefix='/', intents=discord.Intents.all())
 
 
 @bot.event
@@ -36,4 +23,30 @@ async def on_ready():
 async def hello(interaction: discord.Interaction):
     await interaction.response.send_message(f'Hello {interaction.user.mention}!')
 
-bot.run('ODgxMDg5OTI2NzY5MjgzMDky.Gx9LC0.k2dS2eAhPe4mSoCGlAaM-KYsbbgz7MlzKarzcs')
+
+@bot.tree.command(name='play', description='play a song')
+@app_commands.describe(song_url='The song to play')
+async def say(interaction: discord.Interaction, song_url: str):
+    yt_dl_opts = {'format': 'bestaudio/best'}
+    ytdl = yt_dlp.YoutubeDL(yt_dl_opts)
+
+    ffmpeg_opts = {'options': "-vn"}
+
+    voice_channel = interaction.user.voice.channel
+    if voice_channel != None:
+        vc = await voice_channel.connect()
+
+        loop = asyncio.get_event_loop()
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(song_url, download=False))
+
+        # insall ffmpeg to use this
+        song = data['url']
+        player = discord.FFmpegPCMAudio(
+            song, **ffmpeg_opts, executable='C:/FFMPEG/ffmpeg.exe')
+
+        vc.play(player)
+        await interaction.response.send_message(f'Playing {data["title"]}')
+    else:
+        await interaction.response.send_message('User is not in a channel.')
+
+bot.run("TOKEN")
