@@ -30,7 +30,7 @@ def command(bot):
 
             #Create embed
             embed = discord.Embed(
-                title = f'🎶 Now playing: 🎶',
+                title = f'🎶 Now playing 🎶',
                 description = f'{data["title"]}',
                 color = discord.Colour.green()
             )
