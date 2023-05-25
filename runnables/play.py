@@ -1,5 +1,6 @@
 import asyncio;
 import discord;
+from discord import app_commands;
 import yt_dlp;
 import time;
 
@@ -7,6 +8,7 @@ import playerManager;
 
 def command(bot):
     @bot.tree.command(name="play", description="Play a song")
+    @app_commands.describe(url='The url of the song or playlist')
     async def run(interaction: discord.Interaction, url: str):
         yt_dl_opts = {'format': 'bestaudio/best'}
         ytdl = yt_dlp.YoutubeDL(yt_dl_opts)
@@ -16,7 +18,9 @@ def command(bot):
 
             #Connect to voice channel
             voice_channel = interaction.user.voice.channel
-            playerManager.voiceConnection = await voice_channel.connect()
+            voice = discord.utils.get(bot.voice_clients, guild=interaction.guild)
+            if voice == None:
+                playerManager.voiceConnection = await voice_channel.connect()
 
             #Download song
             loop = asyncio.get_event_loop()
@@ -30,7 +34,7 @@ def command(bot):
 
             #Create embed
             embed = discord.Embed(
-                title = f'🎶 Now playing 🎶',
+                title = f'🎶 Now playing: 🎶',
                 description = f'{data["title"]}',
                 color = discord.Colour.green()
             )
@@ -38,8 +42,8 @@ def command(bot):
             embed.add_field(name='⏰ Duration', value=time.strftime('%H:%M:%S', time.gmtime(data['duration'])))
             embed.add_field(name='🧑‍🎨 Artist', value=f'{data["uploader"]}')
             embed.add_field(name='🔎 Views', value=f'{data["view_count"]:,}')
-            embed.set_footer(text=f'🗣️ Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
+            embed.set_footer(text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
 
-            await interaction.channel.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
         else:
             await interaction.response.send_message('User is not in a channel.')
