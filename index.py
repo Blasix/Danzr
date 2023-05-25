@@ -3,15 +3,12 @@ from discord import app_commands;
 from discord.ext import commands;
 import json;
 
-import runnables.play as play;
+import commandLoader;
 
 bot = commands.Bot(command_prefix='/', intents=discord.Intents.all())
 
-#Import play command
-@bot.tree.command(name='play', description='play a song')
-@app_commands.describe(song_url='The song to play')
-async def say(interaction: discord.Interaction, song_url: str):
-    await play.play(interaction, song_url)
+#Load commands
+commandLoader.loadCommands(bot)
 
 #Load bot
 @bot.event
