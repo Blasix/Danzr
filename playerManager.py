@@ -1,0 +1,1 @@
+voiceConnection = None
