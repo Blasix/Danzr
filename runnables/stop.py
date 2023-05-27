@@ -8,6 +8,7 @@ def command(bot):
             if playerManager.voiceConnection.is_playing():
                 playerManager.voiceConnection.stop()
                 playerManager.queue = []
+                playerManager.playing = False
                 await interaction.response.send_message('Stopped playing')
             else:
                 await interaction.response.send_message('Nothing is playing')

@@ -4,11 +4,16 @@ import playerManager;
 def command(bot):
     @bot.tree.command(name="pause", description="Pause the music")
     async def run(interaction: discord.Interaction):
+        embed = discord.Embed(
+            title = f'⏸️ Paused ⏸️',
+            color = discord.Colour.red()
+        )
         try:
             if playerManager.voiceConnection.is_playing():
                 playerManager.voiceConnection.pause()
-                await interaction.response.send_message('Paused')
+                await interaction.response.send_message(embed=embed)
             else:
-                await interaction.response.send_message('Nothing is playing')
+                embed.title = '❌ Nothing is playing ❌'
+                await interaction.response.send_message(embed=embed)
         except Exception as e:
             await interaction.response.send_message(e)
