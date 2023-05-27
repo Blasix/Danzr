@@ -21,10 +21,15 @@ async def play(url : str, channel : discord.VoiceChannel):
     ffmpeg_opts = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
     song = data['url']
     player = discord.FFmpegPCMAudio(song, **ffmpeg_opts)
-    playerManager.voiceConnection.play(player, after=lambda e: await nextSong(channel))
+    playerManager.voiceConnection.play(player, after=lambda e: sync(channel))
     playerManager.playing = True
 
     return data
+
+def sync(channel):
+    async def wrapper(channel):
+        await nextSong(channel)
+    asyncio.run(wrapper(channel))
 
 async def nextSong(channel):
     if (playerManager.voiceConnection.is_playing()):
