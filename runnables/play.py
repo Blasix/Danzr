@@ -40,10 +40,7 @@ def command(bot):
             )
             embed.set_footer(text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
             await interaction.followup.send(embed=embed)
-
-            # Start playing if not already playing
-            if not playerManager.playing:
-                await play_next_song(voice_channel)
+            
         else:
             # Check if the URL is a valid YouTube URL
             if not is_valid_youtube_url(url):
@@ -86,10 +83,6 @@ def command(bot):
             embed.set_footer(text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
             await interaction.followup.send(embed=embed)
 
-            # Start playing if not already playing
-            if not playerManager.playing:
-                await play_next_song(voice_channel)
-
 def convert_playlist_to_queue(playlist_url):
     yt_dl_opts = {
         'extract_flat': 'in_playlist',
@@ -105,15 +98,6 @@ def convert_playlist_to_queue(playlist_url):
             video_urls.append(entry['url'])
 
     return video_urls
-
-async def play_next_song(voice_channel):
-    if playerManager.queue:
-        song_url = playerManager.queue.pop(0)
-        await playUrl.play(song_url, voice_channel)
-        playerManager.playing = True
-    else:
-        playerManager.playing = False
-        await voice_channel.disconnect()
 
 def is_valid_youtube_url(url):
     youtube_regex = r"(?:https?://)?(?:www\.)?youtu(?:\.be/|be\.com/(?:watch\?(?:.*&)?v=|v/|embed/|.*[?&]v=))([^?&]{11})"
