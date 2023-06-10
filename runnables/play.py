@@ -40,6 +40,10 @@ def command(bot):
             )
             embed.set_footer(text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
             await interaction.followup.send(embed=embed)
+
+            # Start playing if not already playing
+            if not playerManager.playing:
+                await playUrl.nextSong(voice_channel)
             
         else:
             # Check if the URL is a valid YouTube URL
