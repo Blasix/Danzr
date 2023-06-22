@@ -9,3 +9,10 @@
 <br>
 <br>
 🐍 This is a remake of the first Danzr bot<a href="https://github.com/DennisHermes/Danzr" target="_blank">(🔗)</a>, which was written in javascript. This bot is written in python. 🟨
+
+<h1>How to run this bot</h1>
+<br>
+- first you go in data.json and enter your discord bot token<br>
+- then you go in the terminal and type `pip install -r requirements.txt`<br>
+- check if you have <a href=https://ffmpeg.org target="_blank">ffmpeg</a> installed <br>
+- then you type `python index.py` (you need to have python installed)
