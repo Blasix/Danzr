@@ -9,10 +9,9 @@ import re
 
 import playerManager
 
-YoutubeSearch 
 def command(bot):
-    @bot.tree.command(name="play", description="Play a song")
-    @app_commands.describe(link_or_query='The URL of the song or playlist')
+    @bot.tree.command(name="play", description="Play a song or playlist")
+    @app_commands.describe(link_or_query='Play a song or playlist from a link or search query')
     async def run(interaction: discord.Interaction, link_or_query: str):
         # Pre-response
         await interaction.response.defer()
