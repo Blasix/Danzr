@@ -9,6 +9,7 @@ import re
 
 import playerManager
 
+
 def command(bot):
     @bot.tree.command(name="play", description="Play a song or playlist")
     @app_commands.describe(link_or_query='Play a song or playlist from a link or search query')
@@ -26,6 +27,7 @@ def command(bot):
 
         # Check if it is a url
         if not is_valid_url(link_or_query):
+            print("Not a valid url")
             # TODO Make a selection menu for wich song to choose
 
             # get results
@@ -45,28 +47,32 @@ def command(bot):
                     color=discord.Colour.green()
                 )
             else:
-                await playerManager.queue.append(url)
+                playerManager.queue.append(url)
                 # Create embed
                 embed = discord.Embed(
                     title=f'🎶 Added to queue 🎶',
                     description=f'{results[0]["title"]}',
                     color=discord.Colour.green()
                 )
-            
+
             # Add video info
             embed.set_thumbnail(url=results[0]["thumbnails"][0])
-            embed.add_field(name='⏰ Duration', value=f'{results[0]["duration"]}')
-            embed.add_field(name='🧑‍🎨 Artist', value=f'{results[0]["channel"]}')
+            embed.add_field(name='⏰ Duration',
+                            value=f'{results[0]["duration"]}')
+            embed.add_field(name='🧑‍🎨 Artist',
+                            value=f'{results[0]["channel"]}')
             embed.add_field(name='🔎 Views', value=f'{results[0]["views"]}')
-            embed.set_footer(text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
+            embed.set_footer(
+                text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
             await interaction.followup.send(embed=embed)
             return
 
         # Check if the URL is a playlist
         if 'playlist' in link_or_query:
+            print('Playlist detected')
             # Convert playlist to a list of video URLs
             video_urls = convert_playlist_to_queue(link_or_query)
-            await playerManager.queue.extend(video_urls)
+            playerManager.queue.extend(video_urls)
 
             # Join the voice channel if not already connected
             if playerManager.voiceConnection is None or not playerManager.voiceConnection.is_connected():
@@ -78,15 +84,16 @@ def command(bot):
                 description=f'{len(video_urls)} videos added from the playlist',
                 color=discord.Colour.green()
             )
-            embed.set_footer(text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
+            embed.set_footer(
+                text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
             await interaction.followup.send(embed=embed)
 
             # Start playing if not already playing
             if not playerManager.playing:
                 await playUrl.nextSong(voice_channel)
-            
-        else:
 
+        else:
+            print('Video detected')
             # Get video data
             yt_dl_opts = {'format': 'bestaudio/best'}
             ytdl = yt_dlp.YoutubeDL(yt_dl_opts)
@@ -107,7 +114,7 @@ def command(bot):
                     color=discord.Colour.green()
                 )
             else:
-                await playerManager.queue.append(link_or_query)
+                playerManager.queue.append(link_or_query)
                 # Create embed
                 embed = discord.Embed(
                     title=f'🎶 Added to queue 🎶',
@@ -117,11 +124,14 @@ def command(bot):
 
             # Add video info
             embed.set_thumbnail(url=data['thumbnail'])
-            embed.add_field(name='⏰ Duration', value=time.strftime('%H:%M:%S', time.gmtime(data['duration'])))
+            embed.add_field(name='⏰ Duration', value=time.strftime(
+                '%H:%M:%S', time.gmtime(data['duration'])))
             embed.add_field(name='🧑‍🎨 Artist', value=f'{data["uploader"]}')
             embed.add_field(name='🔎 Views', value=f'{data["view_count"]:,}')
-            embed.set_footer(text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
+            embed.set_footer(
+                text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
             await interaction.followup.send(embed=embed)
+
 
 def convert_playlist_to_queue(playlist_url):
     yt_dl_opts = {
@@ -138,6 +148,7 @@ def convert_playlist_to_queue(playlist_url):
             video_urls.append(entry['url'])
 
     return video_urls
+
 
 def is_valid_url(url):
     url_regex = r"^(http|https)://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(:[0-9]+)?(/[\w\-\.]*)*(\?[^\s]*)?$"

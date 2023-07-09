@@ -1,15 +1,16 @@
-import discord;
-from discord.ext import commands;
-import json;
+import discord
+from discord.ext import commands
+import json
 
-import commandLoader;
+import commandLoader
 
 bot = commands.Bot(command_prefix='/', intents=discord.Intents.all())
 
-#Load commands
+# Load commands
 commandLoader.loadCommands(bot)
 
-#Load bot
+
+# Load bot
 @bot.event
 async def on_ready():
     print('Bot is ready')
@@ -19,7 +20,7 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-#Login to discord
+# Login to discord
 f = open('data.json')
 data = json.load(f)
 bot.run(data['token'])
