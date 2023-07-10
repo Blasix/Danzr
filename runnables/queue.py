@@ -9,9 +9,8 @@ class QueueView(discord.ui.View):
     data = []
 
     async def send(self, interaction):
-        for i, item in enumerate(playerManager.queue):
-            self.data.append(f"{i + 1}) {item}")
-        print(self.data)
+        self.data = [(url, title, duration, user, str(i+1))
+                     for i, (url, title, duration, user) in enumerate(playerManager.queue)]
         self.message = await interaction.response.defer()
         self.message = await interaction.followup.send(view=self)
         await self.update_message(self.data[:self.sep])
@@ -23,8 +22,8 @@ class QueueView(discord.ui.View):
         )
         for item in data:
             embed.add_field(
-                name=item,
-                value='\u200b',
+                name=f'**{item[4]})** {item[1]}',
+                value=f'({item[2]}) - Added by {item[3]}',
                 inline=False
             ),
         embed.set_footer(

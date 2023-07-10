@@ -3,7 +3,6 @@ import discord
 from discord import app_commands
 from youtube_search import YoutubeSearch
 import yt_dlp
-import time
 import utilities.playUrl as playUrl
 import re
 
@@ -27,7 +26,6 @@ def command(bot):
 
         # Check if it is a url
         if not is_valid_url(link_or_query):
-            print("Not a valid url")
             # TODO Make a selection menu for wich song to choose
 
             # get results
@@ -47,7 +45,8 @@ def command(bot):
                     color=discord.Colour.green()
                 )
             else:
-                playerManager.queue.append(url)
+                playerManager.queue.append(
+                    (url, results[0]["title"], results[0]["duration"], interaction.user.name))
                 # Create embed
                 embed = discord.Embed(
                     title=f'🎶 Added to queue 🎶',
@@ -69,9 +68,9 @@ def command(bot):
 
         # Check if the URL is a playlist
         if 'playlist' in link_or_query:
-            print('Playlist detected')
             # Convert playlist to a list of video URLs
-            video_urls = convert_playlist_to_queue(link_or_query)
+            video_urls = convert_playlist_to_queue(
+                link_or_query, interaction.user.name)
             playerManager.queue.extend(video_urls)
 
             # Join the voice channel if not already connected
@@ -93,7 +92,6 @@ def command(bot):
                 await playUrl.nextSong(voice_channel)
 
         else:
-            print('Video detected')
             # Get video data
             yt_dl_opts = {'format': 'bestaudio/best'}
             ytdl = yt_dlp.YoutubeDL(yt_dl_opts)
@@ -114,7 +112,8 @@ def command(bot):
                     color=discord.Colour.green()
                 )
             else:
-                playerManager.queue.append(link_or_query)
+                playerManager.queue.append(
+                    (link_or_query, data['title'], format_duration(data['duration']), interaction.user.name))
                 # Create embed
                 embed = discord.Embed(
                     title=f'🎶 Added to queue 🎶',
@@ -124,8 +123,8 @@ def command(bot):
 
             # Add video info
             embed.set_thumbnail(url=data['thumbnail'])
-            embed.add_field(name='⏰ Duration', value=time.strftime(
-                '%H:%M:%S', time.gmtime(data['duration'])))
+            embed.add_field(name='⏰ Duration',
+                            value=format_duration(data['duration']))
             embed.add_field(name='🧑‍🎨 Artist', value=f'{data["uploader"]}')
             embed.add_field(name='🔎 Views', value=f'{data["view_count"]:,}')
             embed.set_footer(
@@ -133,7 +132,7 @@ def command(bot):
             await interaction.followup.send(embed=embed)
 
 
-def convert_playlist_to_queue(playlist_url):
+def convert_playlist_to_queue(playlist_url, user):
     yt_dl_opts = {
         'extract_flat': 'in_playlist',
         'skip_download': True,
@@ -144,10 +143,20 @@ def convert_playlist_to_queue(playlist_url):
 
     video_urls = []
     for entry in playlist_data['entries']:
-        if 'url' in entry:
-            video_urls.append(entry['url'])
+        video_urls.append(
+            (entry['url'], entry['title'], format_duration(entry['duration']), user))
 
     return video_urls
+
+
+def format_duration(seconds):
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    if hours > 0:
+        return f"{hours}:{minutes:02d}:{seconds:02d}"
+    else:
+        return f"{minutes}:{seconds:02d}"
 
 
 def is_valid_url(url):
