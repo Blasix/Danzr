@@ -1,0 +1,95 @@
+import discord
+import yt_dlp
+import utilities.playUtils as Utils
+import utilities.playUrl as playUrl
+import playerManager
+
+
+async def play(interaction: discord.Interaction, query: str):
+    class PlaySearchView(discord.ui.View):
+        songs = []
+
+        # send message
+        async def send(self, interaction):
+            selectEmbed = await self.createEmbed()
+            self.message = await interaction.followup.send(view=self, embed=selectEmbed)
+
+        # create embed
+        async def createEmbed(self):
+            await self.searchSongs()
+            if len(self.songs) == 0:
+                return discord.Embed(
+                    title="No songs found",
+                    color=discord.Colour.red()
+                )
+            embed = discord.Embed(
+                title="Select a song",
+                color=discord.Colour.blurple()
+            )
+            for i in range(len(self.songs)):
+                embed.add_field(
+                    name=f"**{i+1})** {self.songs[i][1]}",
+                    value=f"({self.songs[i][2]}) - Song by {self.songs[i][5]}",
+                    inline=False,
+                )
+            await self.addButtons()
+            return embed
+
+        # search for songs, collect data
+        async def searchSongs(self):
+            yt_dl_opts = {
+                'format': 'bestaudio/best',
+                'noplaylist': True,
+                'skip_download': True,
+            }
+            with yt_dlp.YoutubeDL(yt_dl_opts) as ytdl:
+                # Get video data
+                data = ytdl.extract_info(
+                    f"ytsearch5:{query}", download=False)['entries']
+                for i in range(len(data)):
+                    self.songs.append(
+                        (data[i]['webpage_url'], data[i]['title'], Utils.format_duration(data[i]['duration']), data[i]['thumbnail'], data[i]['uploader'], data[i]['view_count'], interaction.user.name))
+
+        # add buttons
+        async def addButtons(self):
+            for i in range(1, min(len(self.songs), 5) + 1):
+                button = discord.ui.Button(
+                    label=str(i), style=discord.ButtonStyle.blurple)
+                button.callback = getattr(
+                    self, f"button{i}_callback")
+                self.add_item(button)
+
+        # button callbacks
+        async def button1_callback(self, interaction: discord.Interaction):
+            await self.playSong(interaction, 0)
+            pass
+
+        async def button2_callback(self, interaction: discord.Interaction):
+            await self.playSong(interaction, 1)
+            pass
+
+        async def button3_callback(self, interaction: discord.Interaction):
+            await self.playSong(interaction, 2)
+            pass
+
+        async def button4_callback(self, interaction: discord.Interaction):
+            await self.playSong(interaction, 3)
+            pass
+
+        async def button5_callback(self, interaction: discord.Interaction):
+            await self.playSong(interaction, 5)
+            pass
+
+        # play song
+        async def playSong(self, interaction: discord.Interaction, index: int):
+            await interaction.response.defer()
+            voice_channel = interaction.user.voice.channel
+            if not playerManager.playing:
+                await playUrl.play(self.songs[index][0], voice_channel)
+                response = f"Started playing: {self.songs[index][1]}"
+            else:
+                playerManager.queue.extend(self.songs[index])
+                response = f"Added to queue: {self.songs[index][1]}"
+            await interaction.edit_original_response(content=response)
+
+    await PlaySearchView(timeout=None).send(interaction)
