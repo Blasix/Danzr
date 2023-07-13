@@ -19,10 +19,11 @@ def convert_playlist_to_queue(playlist_url, user):
     return video_urls
 
 
-def format_duration(seconds):
-    hours, remainder = divmod(seconds, 3600)
+def format_duration(duration):
+    if duration is None:
+        return "0:00"
+    hours, remainder = divmod(int(duration), 3600)
     minutes, seconds = divmod(remainder, 60)
-
     if hours > 0:
         return f"{hours}:{minutes:02d}:{seconds:02d}"
     else:

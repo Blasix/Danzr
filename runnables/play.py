@@ -97,7 +97,13 @@ def command(bot):
 
         else:
             # Get video data
-            yt_dl_opts = {'format': 'bestaudio/best'}
+            yt_dl_opts = {
+                'format': 'bestaudio/best',
+                'noplaylist': True,
+                'skip_download': True,
+                'extract_flat': True,
+                '--write-thumbnail': True,
+            }
             ytdl = yt_dlp.YoutubeDL(yt_dl_opts)
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, lambda: ytdl.extract_info(link_or_query, download=False))

@@ -29,7 +29,7 @@ async def play(interaction: discord.Interaction, query: str):
             for i in range(len(self.songs)):
                 embed.add_field(
                     name=f"**{i+1})** {self.songs[i][1]}",
-                    value=f"({self.songs[i][2]}) - Song by {self.songs[i][5]}",
+                    value=f"({self.songs[i][2]}) - Song by {self.songs[i][4]}",
                     inline=False,
                 )
             await self.addButtons()
@@ -41,6 +41,8 @@ async def play(interaction: discord.Interaction, query: str):
                 'format': 'bestaudio/best',
                 'noplaylist': True,
                 'skip_download': True,
+                'extract_flat': True,
+                '--write-thumbnail': True,
             }
             with yt_dlp.YoutubeDL(yt_dl_opts) as ytdl:
                 # Get video data
@@ -48,7 +50,7 @@ async def play(interaction: discord.Interaction, query: str):
                     f"ytsearch5:{query}", download=False)['entries']
                 for i in range(len(data)):
                     self.songs.append(
-                        (data[i]['webpage_url'], data[i]['title'], Utils.format_duration(data[i]['duration']), data[i]['thumbnail'], data[i]['uploader'], data[i]['view_count'], interaction.user.name))
+                        (data[i]['url'], data[i]['title'], Utils.format_duration(data[i]['duration']), data[i]['thumbnails'], data[i]['uploader'], data[i]['view_count'], interaction.user.name))
 
         # add buttons
         async def addButtons(self):
@@ -88,8 +90,9 @@ async def play(interaction: discord.Interaction, query: str):
                 await playUrl.play(self.songs[index][0], voice_channel)
                 response = f"Started playing: {self.songs[index][1]}"
             else:
-                playerManager.queue.extend(self.songs[index])
+                playerManager.queue.append(
+                    (self.songs[index][0], self.songs[index][1], self.songs[index][2], self.songs[index][6]))
                 response = f"Added to queue: {self.songs[index][1]}"
-            await interaction.edit_original_response(content=response)
+            await interaction.edit_original_response(content=response, embed=None, view=None)
 
     await PlaySearchView(timeout=None).send(interaction)
