@@ -109,7 +109,7 @@ async def play(interaction: discord.Interaction, query: str):
             embed.add_field(name='⏰ Duration',
                             value=f'{self.songs[index][2]}')
             embed.add_field(name='🧑‍🎨 Artist', value=f'{self.songs[index][4]}')
-            embed.add_field(name='🔎 Views', value=f'{self.songs[index][5]}')
+            embed.add_field(name='🔎 Views', value=f'{self.songs[index][5]:,}')
             embed.set_footer(
                 text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
 

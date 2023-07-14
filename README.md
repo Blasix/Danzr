@@ -7,10 +7,11 @@ You can try danzr out yourself without installing it, in my [Discord server](htt
 <h2>Bugs and features to be implemented</h2>
 - [🪲] /skip skips 2 songs <br>
 - [🪲] /play sometimes gives errors <br>
-- [🪲] /play playlist recognition is not good, sometimes starts downloading a useless playlist<br>
+- [🪲] 8D (surround and stereo sound) not working, gets converted to mono<br>
 - [🪲] the playerManager is per bot so the same bot in multiple servers does not work <br><br>
 - [➕] /play support for other services then youtube<br>
 - [➕] /help, message with all commands and explenation<br>
+- [➕] save your own playlists<br>
 - [➕] make bot work without having to install XAMPP and python<br>
 - [➕] make all messages look consistent<br>
 - [➕] add crossfade<br>

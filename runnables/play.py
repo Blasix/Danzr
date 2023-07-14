@@ -26,12 +26,11 @@ def command(bot):
 
         # Check if it is a url
         if not Utils.is_valid_url(link_or_query):
-            print("not url")
             await playSearch.play(interaction, link_or_query)
             return
 
         # Check if the URL is a playlist
-        if 'playlist' in link_or_query:
+        if '/playlist?list=' in link_or_query or '/watch' in link_or_query and 'list=' in link_or_query:
             # Convert playlist to a list of video URLs
             data = Utils.convert_playlist_to_queue(
                 link_or_query, interaction.user.name)
@@ -58,7 +57,6 @@ def command(bot):
             await interaction.followup.send(embed=embed)
 
         else:
-            print("not playlist")
             # Get video data
             yt_dl_opts = {
                 'format': 'bestaudio/best',
@@ -66,9 +64,13 @@ def command(bot):
                 'skip_download': True,
                 'extract_flat': True,
                 '--write-thumbnail': True,
+                '--no-check-certificate': True,
+                '--no-mtime': True,
+                '--no-part': True,
+                '--socket-timeout': '5',
             }
-            ytdl = yt_dlp.YoutubeDL(yt_dl_opts)
-            data = ytdl.extract_info(link_or_query, download=False)
+            with yt_dlp.YoutubeDL(yt_dl_opts) as ytdl:
+                data = ytdl.extract_info(link_or_query, download=False)
 
             # Join the voice channel if not already connected
             if playerManager.voiceConnection is None or not playerManager.voiceConnection.is_connected():
