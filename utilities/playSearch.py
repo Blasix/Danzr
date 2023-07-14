@@ -50,7 +50,7 @@ async def play(interaction: discord.Interaction, query: str):
                     f"ytsearch5:{query}", download=False)['entries']
                 for i in range(len(data)):
                     self.songs.append(
-                        (data[i]['url'], data[i]['title'], Utils.format_duration(data[i]['duration']), data[i]['thumbnails'], data[i]['uploader'], data[i]['view_count'], interaction.user.name))
+                        (data[i]['url'], data[i]['title'], Utils.format_duration(data[i]['duration']), data[i]['thumbnails'][0]['url'], data[i]['uploader'], data[i]['view_count'], interaction.user.name))
 
         # add buttons
         async def addButtons(self):
@@ -88,11 +88,31 @@ async def play(interaction: discord.Interaction, query: str):
             voice_channel = interaction.user.voice.channel
             if not playerManager.playing:
                 await playUrl.play(self.songs[index][0], voice_channel)
-                response = f"Started playing: {self.songs[index][1]}"
+                # Create embed
+                embed = discord.Embed(
+                    title=f'🎶 Now playing 🎶',
+                    description=f'{self.songs[index][1]}',
+                    color=discord.Colour.green()
+                )
             else:
                 playerManager.queue.append(
                     (self.songs[index][0], self.songs[index][1], self.songs[index][2], self.songs[index][6]))
-                response = f"Added to queue: {self.songs[index][1]}"
-            await interaction.edit_original_response(content=response, embed=None, view=None)
+                # Create embed
+                embed = discord.Embed(
+                    title=f'🎶 Added to queue 🎶',
+                    description=f'{self.songs[index][1]}',
+                    color=discord.Colour.green()
+                )
+
+            # Add video info
+            embed.set_thumbnail(url=f'{self.songs[index][3]}')
+            embed.add_field(name='⏰ Duration',
+                            value=f'{self.songs[index][2]}')
+            embed.add_field(name='🧑‍🎨 Artist', value=f'{self.songs[index][4]}')
+            embed.add_field(name='🔎 Views', value=f'{self.songs[index][5]}')
+            embed.set_footer(
+                text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
+
+            await interaction.edit_original_response(embed=embed, view=None)
 
     await PlaySearchView(timeout=None).send(interaction)

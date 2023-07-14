@@ -1,7 +1,6 @@
 import asyncio
 import discord
 from discord import app_commands
-from youtube_search import YoutubeSearch
 import yt_dlp
 import utilities.playUrl as playUrl
 import utilities.playSearch as playSearch
@@ -27,45 +26,8 @@ def command(bot):
 
         # Check if it is a url
         if not Utils.is_valid_url(link_or_query):
+            print("not url")
             await playSearch.play(interaction, link_or_query)
-            # # TODO Make a selection menu for wich song to choose
-
-            # # get results
-            # results = YoutubeSearch(link_or_query, max_results=1).to_dict()
-            # url = "https://www.youtube.com" + results[0]['url_suffix']
-
-            # # Join the voice channel if not already connected
-            # if playerManager.voiceConnection is None or not playerManager.voiceConnection.is_connected():
-            #     playerManager.voiceConnection = await voice_channel.connect()
-
-            # if not playerManager.playing:
-            #     await playUrl.play(url, voice_channel)
-            #     # Create embed
-            #     embed = discord.Embed(
-            #         title=f'🎶 Now playing 🎶',
-            #         description=f'{results[0]["title"]}',
-            #         color=discord.Colour.green()
-            #     )
-            # else:
-            #     playerManager.queue.append(
-            #         (url, results[0]["title"], results[0]["duration"], interaction.user.name))
-            #     # Create embed
-            #     embed = discord.Embed(
-            #         title=f'🎶 Added to queue 🎶',
-            #         description=f'{results[0]["title"]}',
-            #         color=discord.Colour.green()
-            #     )
-
-            # # Add video info
-            # embed.set_thumbnail(url=results[0]["thumbnails"][0])
-            # embed.add_field(name='⏰ Duration',
-            #                 value=f'{results[0]["duration"]}')
-            # embed.add_field(name='🧑‍🎨 Artist',
-            #                 value=f'{results[0]["channel"]}')
-            # embed.add_field(name='🔎 Views', value=f'{results[0]["views"]}')
-            # embed.set_footer(
-            #     text=f'Requested by {interaction.user.name}', icon_url=interaction.user.avatar.url)
-            # await interaction.followup.send(embed=embed)
             return
 
         # Check if the URL is a playlist
@@ -96,6 +58,7 @@ def command(bot):
             await interaction.followup.send(embed=embed)
 
         else:
+            print("not playlist")
             # Get video data
             yt_dl_opts = {
                 'format': 'bestaudio/best',
@@ -105,8 +68,7 @@ def command(bot):
                 '--write-thumbnail': True,
             }
             ytdl = yt_dlp.YoutubeDL(yt_dl_opts)
-            loop = asyncio.get_event_loop()
-            data = await loop.run_in_executor(None, lambda: ytdl.extract_info(link_or_query, download=False))
+            data = ytdl.extract_info(link_or_query, download=False)
 
             # Join the voice channel if not already connected
             if playerManager.voiceConnection is None or not playerManager.voiceConnection.is_connected():
