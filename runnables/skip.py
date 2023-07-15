@@ -17,8 +17,10 @@ def command(bot):
             if playerManager.voiceConnection.is_playing():
                 embed.title = f'⏭️ Skipped the current song ⏭️'
                 embed.color = discord.Colour.green()
-                voice_channel = interaction.user.voice.channel
-                await playUrl.nextSong(voice_channel)
+                # because playURl already plays the next song we just need to stop the current one
+                if playerManager.voiceConnection.is_playing():
+                    playerManager.voiceConnection.stop()
+                playerManager.playing = False
 
             # Send embed
             await interaction.response.send_message(embed=embed)

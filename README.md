@@ -5,8 +5,6 @@ You can try danzr out yourself without installing it, in my [Discord server](htt
 
 
 <h2>Bugs and features to be implemented</h2>
-- [🪲] /skip skips 2 songs <br>
-- [🪲] /play sometimes gives errors <br>
 - [🪲] 8D (surround and stereo sound) not working, gets converted to mono<br>
 - [🪲] the playerManager is per bot so the same bot in multiple servers does not work <br><br>
 - [➕] /play support for other services then youtube<br>
