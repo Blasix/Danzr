@@ -50,7 +50,7 @@ async def nextSong(channel):
         await play(playerManager.queue[0][0], channel)
         if playerManager.looping == True:
             playerManager.queue.append(playerManager.queue[0])
-
+        playerManager.nowPlaying = playerManager.queue[0]
         playerManager.queue.pop(0)
     else:
         return None

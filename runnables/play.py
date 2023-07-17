@@ -42,6 +42,7 @@ def command(bot):
             # add playlist to queue
             if not playerManager.playing:
                 await playUrl.play(data[0][0], voice_channel)
+                playerManager.nowPlaying = data[0]
                 playerManager.queue.extend(data[1:])
             else:
                 playerManager.queue.extend(data)
@@ -77,6 +78,8 @@ def command(bot):
                 playerManager.voiceConnection = await voice_channel.connect()
 
             if not playerManager.playing:
+                playerManager.nowPlaying = (link_or_query, data['title'], Utils.format_duration(
+                    data['duration']), interaction.user.name)
                 await playUrl.play(link_or_query, voice_channel)
 
                 # Create embed

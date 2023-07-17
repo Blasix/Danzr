@@ -79,6 +79,8 @@ async def play(interaction: discord.Interaction, query: str):
             await interaction.response.defer()
             voice_channel = interaction.user.voice.channel
             if not playerManager.playing:
+                playerManager.nowPlaying = (
+                    self.songs[index][0], self.songs[index][1], self.songs[index][2], self.songs[index][6])
                 await playUrl.play(self.songs[index][0], voice_channel)
                 embed = discord.Embed(
                     title='🎶 Now playing 🎶',

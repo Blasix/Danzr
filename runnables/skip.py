@@ -14,12 +14,11 @@ def command(bot):
             )
 
             # Check if bot is playing and execute command
-            if playerManager.voiceConnection.is_playing():
+            if playerManager.voiceConnection is not None and playerManager.voiceConnection.is_playing():
                 embed.title = f'⏭️ Skipped the current song ⏭️'
                 embed.color = discord.Colour.green()
                 # because playURl already plays the next song we just need to stop the current one
-                if playerManager.voiceConnection.is_playing():
-                    playerManager.voiceConnection.stop()
+                playerManager.voiceConnection.stop()
                 playerManager.playing = False
 
             # Send embed
