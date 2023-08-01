@@ -4,7 +4,7 @@ import json
 
 import commandLoader
 
-bot = commands.Bot(command_prefix='/', intents=discord.Intents.all())
+bot = commands.Bot(command_prefix=None, intents=discord.Intents.all())
 
 # Load commands
 commandLoader.loadCommands(bot)

@@ -69,6 +69,7 @@ def command(bot):
                 '--no-mtime': True,
                 '--no-part': True,
                 '--socket-timeout': '5',
+                'quiet': True,
             }
             with yt_dlp.YoutubeDL(yt_dl_opts) as ytdl:
                 data = ytdl.extract_info(link_or_query, download=False)
