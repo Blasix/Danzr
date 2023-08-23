@@ -32,6 +32,15 @@ run these 2 commands:
 
 `python index.py`
 
+### Or run it with docker
+Make sure [Docker](https://docs.docker.com/get-docker/) is installed
+
+run this command (make sure you replaced the token in the command with your own token):
+
+`docker run -d -e TOKEN=YOUR_TOKEN blasix/danzr`
+
+this command will download the image, then run it in the background.
+
 ## Contributing
 
 Before creating an issue, please ensure that it hasn't already been reported/suggested.
