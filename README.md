@@ -1,8 +1,9 @@
+# Impotant
+**This version of danzr is discontinued and replaced with [Danzr in Java](https://github.com/Blasix/Danzr_Java).**
+
 # Danzr
+
 Do you need a self hosted discord bot that can play music, even from youtube. Then danzr is the bot you need!
-
-You can try danzr out yourself without installing it, in my [Discord server](https://discord.gg/73fj8ez9nC)
-
 
 <h2>Bugs and features to be implemented</h2>
 - [🪲] 8D (surround and stereo sound) not working, gets converted to mono<br>
